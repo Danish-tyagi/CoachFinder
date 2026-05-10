@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
-import { FiMenu, FiX, FiLogOut, FiSettings } from 'react-icons/fi';
+import { useCart } from '../../context/CartContext';
+import CartDrawer from '../cart/CartDrawer';
+import { FiMenu, FiX, FiLogOut, FiSettings, FiShoppingCart } from 'react-icons/fi';
 import { MdSchool } from 'react-icons/md';
 
 const NAV_LINKS = [
@@ -16,6 +18,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { user, logout, isAdmin } = useAuth();
+  const { cartItems, setCartOpen } = useCart();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -86,6 +89,20 @@ export default function Navbar() {
 
           {/* Desktop auth */}
           <div className="hidden md:flex items-center gap-3">
+            {/* cart icon */}
+            <button
+              onClick={() => setCartOpen(true)}
+              className="relative p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+              aria-label="Open cart"
+            >
+              <FiShoppingCart size={20} />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-violet-600 text-white text-xs flex items-center justify-center font-bold">
+                  {cartItems.length}
+                </span>
+              )}
+            </button>
+
             {user ? (
               <div className="relative">
                 <button
@@ -225,6 +242,9 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Cart Drawer */}
+      <CartDrawer />
     </motion.nav>
   );
 }

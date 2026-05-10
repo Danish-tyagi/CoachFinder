@@ -10,21 +10,21 @@ import {
 import { MdVerified } from 'react-icons/md'
 import api from '../lib/api'
 import { useAuth } from '../context/AuthContext'
+import { useCart } from '../context/CartContext'
 import StarRating from '../components/ui/StarRating'
 import CategoryBadge from '../components/ui/CategoryBadge'
 import { formatFees } from '../lib/utils'
-import ApplyModal from '../components/institutes/ApplyModal'
 
 export default function InstituteDetailPage() {
   const { id } = useParams()
   const { user } = useAuth()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { addToCart, isInCart, setCartOpen } = useCart()
 
   const [activeImg, setActiveImg] = useState(0)
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState('')
-  const [showApplyModal, setShowApplyModal] = useState(false)
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -380,9 +380,23 @@ export default function InstituteDetailPage() {
               </div>
 
               <button
-                onClick={() => setShowApplyModal(true)}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white font-bold transition-all shadow-lg shadow-violet-500/20 hover:scale-[1.02] mb-3">
-                Apply Now
+                onClick={() => {
+                  if (isInCart(inst._id)) {
+                    setCartOpen(true)
+                    return
+                  }
+                  const added = addToCart(inst)
+                  if (added) {
+                    toast.success('Added to cart!')
+                    setCartOpen(true)
+                  } else {
+                    toast('Already in cart', { icon: '🛒' })
+                    setCartOpen(true)
+                  }
+                }}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white font-bold transition-all shadow-lg shadow-violet-500/20 hover:scale-[1.02] mb-3"
+              >
+                {isInCart(inst._id) ? '🛒 View Cart' : 'Add to Cart'}
               </button>
               <a
                 href={`tel:${inst.phone}`}
@@ -412,13 +426,7 @@ export default function InstituteDetailPage() {
         </div>
       </div>
 
-      {/* Apply Modal */}
-      {showApplyModal && (
-        <ApplyModal
-          institute={inst}
-          onClose={() => setShowApplyModal(false)}
-        />
-      )}
+      {/* Apply Modal removed - now using Cart */}
     </div>
   )
 }

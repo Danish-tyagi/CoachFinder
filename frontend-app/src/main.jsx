@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './context/AuthContext'
 import { LocationProvider } from './context/LocationContext'
+import { CartProvider } from './context/CartContext'
 import App from './App.jsx'
 import './index.css'
 
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
+          <CartProvider>
           <LocationProvider>
             <App />
             <Toaster
@@ -35,6 +37,7 @@ createRoot(document.getElementById('root')).render(
               }}
             />
           </LocationProvider>
+          </CartProvider>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
